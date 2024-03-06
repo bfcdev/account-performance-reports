@@ -165,23 +165,47 @@ st.write(f'The correlation of ELK vs ETH using daily data is: {elk_pf.daily_retu
 st.write(f'The correlation of ELK vs BTC using daily data is: {elk_pf.daily_returns.vbt.corr(btc_daily_data.returns):.2f}%')
 
 
-# Create a dict of the different portfolios with the key being the name of the portfolio
-portfolios = {
-    'ELK Full': elk_pf,
-    'Yosemite ETH Fast': yos_eth_fast_pf,
-    'Yosemite ETH Slow': yos_eth_slow_pf,
-    'Seq ETH Fast': seq_eth_fast_pf,
-    'Seq ETH Slow': seq_eth_slow_pf
-}
-# Create a dropdown to select the portfolio
-portfolio = st.selectbox('Select Strategy', list(portfolios.keys()))
-# output the stats and plots for each portfolio strategy
-col3, col4 = st.columns([3,4]) # 2nd col is 2x as big as first col
-st.write(f'## {portfolio} Portfolio Stats')
+st.write('## Sub Portfolio Stats \n')
+with st.container():
+    # Create a dict of the different portfolios with the key being the name of the portfolio
+    portfolios = {
+        'ELK Full': elk_pf,
+        'Yosemite ETH Fast': yos_eth_fast_pf,
+        'Yosemite ETH Slow': yos_eth_slow_pf,
+        'Seq ETH Fast': seq_eth_fast_pf,
+        'Seq ETH Slow': seq_eth_slow_pf
+    }
+    # Create a dropdown to select the portfolio
+    portfolio = st.selectbox('Select Strategy', list(portfolios.keys()))
+    
+    col3, col4 = st.columns([1,2]) # 2nd col is 2x as big as first col
 
-st.dataframe(portfolios[portfolio].stats(), height=400, width=400)
-st.plotly_chart(portfolios[portfolio].plot(), use_container_width=True)
-st.write(f'The correlation of {portfolio} vs ETH using minutely data is: {portfolios[portfolio].returns.vbt.corr(portfolios[portfolio].bm_returns):.2f}%')
-st.write(f'The correlation of {portfolio} vs ETH using daily data is: {portfolios[portfolio].daily_returns.vbt.corr(eth_minutely_data.resample("1d").returns):.2f}%')
-st.write(f'The correlation of {portfolio} vs BTC using daily data is: {portfolios[portfolio].daily_returns.vbt.corr(btc_daily_data.returns):.2f}%')
-st.write(f'The correlation of {portfolio} vs ELK using daily data is: {portfolios[portfolio].daily_returns.vbt.corr(elk_pf.daily_returns):.2f}%')
+    with col3:
+
+
+        # output the stats and plots for each portfolio strategy
+
+        st.write(f'#### {portfolio} Portfolio Stats')
+
+        st.dataframe(portfolios[portfolio].stats(), height=400, width=400)
+    with col4:
+        st.plotly_chart(portfolios[portfolio].plot(title=f'{portfolio}'), use_container_width=True)
+        
+        
+# Create a correlation matrix for all the strategies and the ETH price and one another
+# Note, we are using the minutely data for ETH
+combined_returns = pd.DataFrame({
+    'elk_pf': elk_pf.returns,
+    'seq_eth_fast': seq_eth_fast_pf.returns,
+    'seq_eth_slow': seq_eth_slow_pf.returns,
+    'yos_eth_fast': yos_eth_fast_pf.returns,
+    'yos_eth_slow': yos_eth_slow_pf.returns,
+    'eth_price': eth_minutely_data.returns
+})
+
+# Compute the correlation matrix
+correlation_matrix = combined_returns.corr()
+
+# Display the correlation matrix
+
+st.plotly_chart(correlation_matrix.vbt.heatmap())

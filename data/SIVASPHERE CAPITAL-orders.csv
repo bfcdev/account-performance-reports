@@ -1,0 +1,11 @@
+,title,direction,leverage,open_date,entry_price,pnl,closed,closed_date,fill_price,pnl_percent
+0,ETHUSDT Perpetual,Isolated,Long 3.00x,"02/02/2024, 13:01:37","2,295.67 USDT",+28.89 USDT,4 Contracts,"02/06/2024, 13:28:46","2,370.79 USDT",+9.43%
+1,WLDUSDT Perpetual,Isolated,Short 3.00x,"12/10/2023, 23:29:24",2.486 USDT,+0.37 USDT,12 Contracts,"12/11/2023, 10:45:26",2.452 USDT,+3.80%
+2,DOGEUSDT Perpetual,Isolated,Short 10.00x,"12/10/2023, 19:46:49",0.10322 USDT,+955.11 USDT,95 Contracts,"12/10/2023, 20:12:55",0.09307 USDT,+97.40%
+3,DOGEUSDT Perpetual,Isolated,Short 10.00x,"12/10/2023, 18:46:40",0.10194 USDT,+872.16 USDT,99 Contracts,"12/10/2023, 20:12:55",0.09303 USDT,+86.42%
+4,XRPUSDT Perpetual,Isolated,Long 3.00x,"11/27/2023, 14:37:26",0.5969 USDT,+21.73 USDT,53 Contracts,"11/30/2023, 05:13:02",0.6016 USDT,+2.06%
+5,WLDUSDT Perpetual,Isolated,Short 3.00x,"11/25/2023, 14:18:51",2.800 USDT,+72.28 USDT,568 Contracts,"11/25/2023, 21:53:49",2.670 USDT,+13.63%
+6,PEPEUSDT Perpetual,Isolated,Short 3.00x,"11/09/2023, 18:15:29",0.000001347 USDT,+82.94 USDT,182 Contracts,"11/09/2023, 21:41:42",0.000001300 USDT,+10.15%
+7,PEPEUSDT Perpetual,Isolated,Short 3.00x,"11/09/2023, 18:04:47",0.000001317 USDT,+26.56 USDT,173 Contracts,"11/09/2023, 21:41:42",0.000001300 USDT,+3.49%
+8,PEPEUSDT Perpetual,Isolated,Short 3.00x,"11/04/2023, 02:25:35",0.000001134 USDT,+47.59 USDT,184 Contracts,"11/04/2023, 03:01:41",0.000001107 USDT,+6.84%
+9,PEPEUSDT Perpetual,Isolated,Short 3.00x,"10/26/2023, 15:23:36",0.000001248 USDT,+146.99 USDT,249 Contracts,"10/27/2023, 06:14:41",0.000001187 USDT,+14.20%
