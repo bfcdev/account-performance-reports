@@ -18,6 +18,7 @@ data = vbt.Data.load("price_data.pkl")
 
 
 # %%
+# Get this from the shared drive
 folder = "/Users/ericervin/Library/CloudStorage/GoogleDrive-eervin@blockforcecapital.com/Shared drives/AI/data/Copy Trading/Data"
 
 files = os.listdir(folder)
