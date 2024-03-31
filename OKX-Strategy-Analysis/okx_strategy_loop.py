@@ -345,15 +345,15 @@ for file in files:
             unlevered_pf.save(f"{SAVE_FOLDER}/{abreviated_filename}_{symbol}_unlevered_pf.pkl") 
             
             # Leveraged portfolio stats
-            temp_results = pd.DataFrame([pf.stats()])
+            temp_results = pd.DataFrame([pf.stats(metrics=ordered_metrics)])
             temp_results["file_symbol"] = f"{abreviated_filename}_{symbol}"
             temp_results["symbol"] = symbol
             master_results = pd.concat([master_results, temp_results])
 
             # Unlevered portfolio stats
-            temp_unlevered_results = pd.DataFrame([unlevered_pf.stats()])
+            temp_unlevered_results = pd.DataFrame([unlevered_pf.stats(metrics=ordered_metrics)])
             temp_unlevered_results["file_symbol"] = f"{abreviated_filename}_{symbol}_unlevered"
-            temp_unlevered_results["symbol"] = f"{symbol}_unlevered"
+            temp_unlevered_results["symbol"] = f"{symbol}"
             master_results = pd.concat([master_results, temp_unlevered_results])
 
 
