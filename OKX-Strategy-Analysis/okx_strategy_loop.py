@@ -14,10 +14,14 @@ vbt.settings.plotting.use_resampler = (
 SAVE_FOLDER = "OKX-Strategy-Analysis/results"
 DATA_FILE = "OKX-Strategy-Analysis/price_data.pkl"
 main_symbols = ["BTCUSDT", "ETHUSDT"]
+TIMEFRAME = "1T"
 # If you don't already have the data use get_data.py
 data = vbt.Data.load(DATA_FILE)
 
+# TODO: Need to check the files for min max dates then confirm that our data file is up to date #############
+
 ######################## Custom Metrics ########################
+# TODO: Could probably do this in a separate file and import it
 ## Usage
 # Example of how to create a custom metric
 # https://vectorbt.dev/api/portfolio/base/#custom-metrics
@@ -31,48 +35,48 @@ data = vbt.Data.load(DATA_FILE)
 # Now call the stats method with the ordered metrics
 # pf.stats(metrics=ordered_metrics)
 
+
 def calc_capital_weighted_time_in_market(portfolio):
     portfolio_trades = portfolio.trades.records_readable
     # Calculate trade duration and convert to seconds
-    trade_duration_seconds = (portfolio_trades['Exit Index'] - portfolio_trades['Entry Index']).dt.total_seconds()
-    capital_invested = portfolio_trades.Size * portfolio_trades['Avg Entry Price']
+    trade_duration_seconds = (
+        portfolio_trades["Exit Index"] - portfolio_trades["Entry Index"]
+    ).dt.total_seconds()
+    capital_invested = portfolio_trades.Size * portfolio_trades["Avg Entry Price"]
     weighted_time = (trade_duration_seconds * capital_invested).sum()
     # Calculate total time in seconds
-    total_time_seconds = (portfolio.wrapper.index[-1] - portfolio.wrapper.index[0]).total_seconds()
-    capital_weighted_time_pct = (weighted_time / (total_time_seconds * portfolio.value.mean())) * 100
+    total_time_seconds = (
+        portfolio.wrapper.index[-1] - portfolio.wrapper.index[0]
+    ).total_seconds()
+    capital_weighted_time_pct = (
+        weighted_time / (total_time_seconds * portfolio.value.mean())
+    ) * 100
     return capital_weighted_time_pct
 
 
 # Define your custom metrics
 max_winning_streak = (
-    'max_winning_streak',
-    dict(
-        title='Max Winning Streak',
-        calc_func='trades.winning_streak.max'
-    )
+    "max_winning_streak",
+    dict(title="Max Winning Streak", calc_func="trades.winning_streak.max"),
 )
 
 max_losing_streak = (
-    'max_losing_streak',
-    dict(
-        title='Max Losing Streak',
-        calc_func='trades.losing_streak.max'
-    )
+    "max_losing_streak",
+    dict(title="Max Losing Streak", calc_func="trades.losing_streak.max"),
 )
 
 capital_weighted_time_exposure = (
-    'capital_weighted_time_exposure',
+    "capital_weighted_time_exposure",
     dict(
-        title='Capital Weighted Time Exposure [%]',
-        calc_func=lambda self, group_by:
-        calc_capital_weighted_time_in_market(self)
-    )
+        title="Capital Weighted Time Exposure [%]",
+        calc_func=lambda self, group_by: calc_capital_weighted_time_in_market(self),
+    ),
 )
 
 custom_metrics_dict = {
-    'max_winning_streak': max_winning_streak,
-    'max_losing_streak': max_losing_streak,
-    'capital_weighted_time_exposure': capital_weighted_time_exposure
+    "max_winning_streak": max_winning_streak,
+    "max_losing_streak": max_losing_streak,
+    "capital_weighted_time_exposure": capital_weighted_time_exposure,
 }
 
 # Retrieve the default metrics and convert them to a dictionary
@@ -81,15 +85,40 @@ default_metrics_dict = dict(vbt.Portfolio.metrics)
 
 # Reorder metrics according to desired_order
 desired_order = [
-    'start', 'end', 'period', 'start_value', 'min_value', 'max_value', 
-    'end_value', 'cash_deposits', 'cash_earnings', 'total_return', 
-    'bm_return', 'total_time_exposure', 'capital_weighted_time_exposure', 
-    'max_gross_exposure', 'max_dd', 'max_dd_duration', 'total_orders', 
-    'total_fees_paid', 'total_trades', 'win_rate', 'max_winning_streak', 
-    'max_losing_streak', 'best_trade', 'worst_trade', 'avg_winning_trade', 
-    'avg_losing_trade', 'avg_winning_trade_duration', 'avg_losing_trade_duration', 
-    'profit_factor', 'expectancy', 'sharpe_ratio', 'calmar_ratio', 
-    'omega_ratio', 'sortino_ratio'
+    "start",
+    "end",
+    "period",
+    "start_value",
+    "min_value",
+    "max_value",
+    "end_value",
+    "cash_deposits",
+    "cash_earnings",
+    "total_return",
+    "bm_return",
+    "total_time_exposure",
+    "capital_weighted_time_exposure",
+    "max_gross_exposure",
+    "max_dd",
+    "max_dd_duration",
+    "total_orders",
+    "total_fees_paid",
+    "total_trades",
+    "win_rate",
+    "max_winning_streak",
+    "max_losing_streak",
+    "best_trade",
+    "worst_trade",
+    "avg_winning_trade",
+    "avg_losing_trade",
+    "avg_winning_trade_duration",
+    "avg_losing_trade_duration",
+    "profit_factor",
+    "expectancy",
+    "sharpe_ratio",
+    "calmar_ratio",
+    "omega_ratio",
+    "sortino_ratio",
 ]
 
 # Reorder metrics according to desired_order
@@ -107,8 +136,8 @@ for metric_name in desired_order:
 ######################## End Custom Metrics ########################
 
 
+# %% Loop through all the files in the folder that have OKX Copy Trading Profiles Import their trades for analysis
 
-# %%
 # Get this from the shared drive
 folder = "/Users/ericervin/Library/CloudStorage/GoogleDrive-eervin@blockforcecapital.com/Shared drives/AI/data/Copy Trading/Data"
 
@@ -124,7 +153,7 @@ for file in files:
 
     trades = pd.read_csv(filename)
     # Drop rows where closed_date is '--' currently open trades
-    print(f'Processing {abreviated_filename}')
+    print(f"Processing {abreviated_filename}")
     # Check to see if the file has any data
     if trades.empty:
         print(f"No data for {abreviated_filename}")
@@ -289,7 +318,9 @@ for file in files:
     )
     orders["trade_quantity"] = orders["trade_direction"] * orders["quantity"]
 
-    for symbol in main_symbols:
+    ######################## Portfolio Analysis ########################
+
+    for symbol in main_symbols:  # Currently just looking at BTC and ETH
         if symbol not in trades.symbol.unique():
             print(f"No data for {abreviated_filename} for {symbol}")
             temp_results_created = False
@@ -308,25 +339,19 @@ for file in files:
             # Change Floor and Ceiling based on your preference to zoom in or out. This is just rounding the date to the nearest hour/day/etc.
             min_date = symbol_orders.index.min().floor("D")
             max_date = symbol_orders.index.max().ceil("D")
-            # print(f"Minimum date: {min_date}")
-            # print(f"Maximum date: {max_date}")
 
+            # Calculate the returns for an unlevered portfolio
             unlevered_pf = vbt.Portfolio.from_orders(
-                close=symbol_data.loc[
-                    min_date:max_date
-                ],  # Note, here we are using the minutely data for ETH
+                close=symbol_data.loc[min_date:max_date],
                 size=symbol_orders["trade_quantity"],
                 price=symbol_orders["price"],
                 size_type="amount",
-                # fixed_fees = trades['fees'],
-                init_cash="auto",  # 40000,
-                # leverage=10,
-                leverage_mode=vbt.pf_enums.LeverageMode.Eager,
-                freq="15T",
+                init_cash="auto",
+                freq=TIMEFRAME,  # Can change this to 1T if you want minutely data but we will need to update our get data function.
             )
-            # print(f'Unlevered Portfolio Sim Sharpe Ratio for {abreviated_filename} for {symbol}: {unlevered_pf.sharpe_ratio}')
+            # Calculate the returns for a leveraged portfolio
             init_cash = unlevered_pf.init_cash
-            leverage = 3
+            leverage = 3  # TODO in the future build this into the streamlit app so the user can choose appropriate leverage
             pf = vbt.Portfolio.from_orders(
                 close=symbol_data.loc[
                     min_date:max_date
@@ -338,12 +363,14 @@ for file in files:
                 init_cash=init_cash / leverage,
                 leverage=leverage,
                 leverage_mode=vbt.pf_enums.LeverageMode.Eager,
-                freq="15T",
+                freq=TIMEFRAME,
             )
             # print(type(pf.stats()))
             pf.save(f"{SAVE_FOLDER}/{abreviated_filename}_{symbol}_pf.pkl")
-            unlevered_pf.save(f"{SAVE_FOLDER}/{abreviated_filename}_{symbol}_unlevered_pf.pkl") 
-            
+            unlevered_pf.save(
+                f"{SAVE_FOLDER}/{abreviated_filename}_{symbol}_unlevered_pf.pkl"
+            )
+
             # Leveraged portfolio stats
             temp_results = pd.DataFrame([pf.stats(metrics=ordered_metrics)])
             temp_results["file_symbol"] = f"{abreviated_filename}_{symbol}"
@@ -351,8 +378,12 @@ for file in files:
             master_results = pd.concat([master_results, temp_results])
 
             # Unlevered portfolio stats
-            temp_unlevered_results = pd.DataFrame([unlevered_pf.stats(metrics=ordered_metrics)])
-            temp_unlevered_results["file_symbol"] = f"{abreviated_filename}_{symbol}_unlevered"
+            temp_unlevered_results = pd.DataFrame(
+                [unlevered_pf.stats(metrics=ordered_metrics)]
+            )
+            temp_unlevered_results["file_symbol"] = (
+                f"{abreviated_filename}_{symbol}_unlevered"
+            )
             temp_unlevered_results["symbol"] = f"{symbol}"
             master_results = pd.concat([master_results, temp_unlevered_results])
 
@@ -360,4 +391,3 @@ for file in files:
 # Save to CSV
 master_results.set_index("file_symbol", inplace=True)
 master_results.to_csv(f"{SAVE_FOLDER}/master_stats.csv")
-
