@@ -8,7 +8,7 @@ import os
 FOLDER = "/Users/ericervin/Library/CloudStorage/GoogleDrive-eervin@blockforcecapital.com/Shared drives/AI/data/Copy Trading/Data"
 files = os.listdir(FOLDER)
 files = [f for f in files if f.endswith(".csv")]
-
+TIMEFRAME = '1T'
 # Create a list of all the files in the data folder
 # Initialize min and max dates
 absolute_min_date = pd.Timestamp.max.tz_localize("UTC")
@@ -48,6 +48,6 @@ for file in files:
 
 print(f"Pulling data for dates {absolute_min_date} to {absolute_max_date}")
 main_symbols = ['BTCUSDT', 'ETHUSDT']
-data = vbt.BinanceData.pull(main_symbols, start=min_date, end=max_date, timeframe='15T')
+data = vbt.BinanceData.pull(main_symbols, start=min_date, end=max_date, timeframe=TIMEFRAME)
 data.save('OKX-Strategy-Analysis/price_data.pkl')
-print(f"Data saved for dates to OKX-Strategy-Analysis/price_data.pkl")
+print(f"Data saved for dates to OKX-Strategy-Analysis/price_data.pkl {absolute_min_date} to {absolute_max_date} with timeframe {TIMEFRAME}")
